@@ -112,4 +112,41 @@ void main() {
     expect(find.text('Guest'), findsOneWidget);
     expect(find.text('Sign in'), findsOneWidget);
   });
+
+  testWidgets('forgot password walks email -> code -> new password',
+      (tester) async {
+    await _pumpApp(tester);
+    await _openProfile(tester);
+
+    await tester.tap(find.text('Sign in'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Forgot password?'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Reset your password'), findsOneWidget);
+
+    // Step 1: request a code.
+    await tester.enterText(
+        find.byType(TextFormField).first, 'thandi@example.com');
+    await tester.tap(find.widgetWithText(FilledButton, 'Send reset code'));
+    await tester.pumpAndSettle();
+
+    // Step 2 appears; a wrong code is rejected with the API's message.
+    expect(find.text('Reset code'), findsOneWidget);
+    final fields = find.byType(TextFormField);
+    await tester.enterText(fields.at(1), '000000');
+    await tester.enterText(fields.at(2), 'brand-new-pass');
+    await tester.tap(find.widgetWithText(FilledButton, 'Reset password'));
+    await tester.pumpAndSettle();
+    expect(find.text('Invalid or expired code'), findsOneWidget);
+
+    // The right code lands back on login with the success notice.
+    await tester.enterText(fields.at(1), MockAuthRepository.resetCode);
+    await tester.tap(find.widgetWithText(FilledButton, 'Reset password'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Welcome back 👋'), findsOneWidget);
+    expect(find.text('Password updated — sign in with your new one'),
+        findsOneWidget);
+  });
 }

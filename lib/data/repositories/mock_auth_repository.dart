@@ -1,9 +1,12 @@
 import '../../domain/entities/user_profile.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../api/api_client.dart';
 
 /// In-memory identity store. Starts as a guest; accepts any credentials
 /// whose shapes are valid so widget tests can drive both flows offline.
+/// The password-reset code is always [resetCode].
 class MockAuthRepository implements AuthRepository {
+  static const resetCode = '123456';
   static const _latency = Duration(milliseconds: 350);
 
   UserProfile _current = const UserProfile(
@@ -57,5 +60,21 @@ class MockAuthRepository implements AuthRepository {
       name: 'Guest',
       isGuest: true,
     );
+  }
+
+  @override
+  Future<void> requestPasswordReset(String email) =>
+      Future<void>.delayed(_latency);
+
+  @override
+  Future<void> resetPassword({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) async {
+    await Future<void>.delayed(_latency);
+    if (code != resetCode) {
+      throw ApiException(400, 'Invalid or expired code');
+    }
   }
 }

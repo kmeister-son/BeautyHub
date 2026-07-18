@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/presentation/forgot_password_screen.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/signup_screen.dart';
 import '../../features/booking/presentation/booking_screen.dart';
@@ -56,6 +57,11 @@ final appRouter = GoRouter(
       path: '/signup',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const SignupScreen(),
+    ),
+    GoRoute(
+      path: '/forgot-password',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const ForgotPasswordScreen(),
     ),
     GoRoute(
       path: '/salon/:id',

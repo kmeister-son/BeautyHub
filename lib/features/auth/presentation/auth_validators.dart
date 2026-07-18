@@ -14,3 +14,10 @@ String? validateNewPassword(String? value) {
   if (value.length < 8) return 'Use at least 8 characters';
   return null;
 }
+
+String? validateResetCode(String? value) {
+  final v = value?.trim() ?? '';
+  if (v.isEmpty) return 'Enter the code from your email';
+  if (!RegExp(r'^\d{6}$').hasMatch(v)) return 'The code is 6 digits';
+  return null;
+}

@@ -16,4 +16,15 @@ abstract class AuthRepository {
 
   /// Drops the stored credentials; the next use provisions a fresh guest.
   Future<void> signOut();
+
+  /// Requests a one-time reset code for [email]. Always succeeds, whether
+  /// or not an account exists (no account probing).
+  Future<void> requestPasswordReset(String email);
+
+  /// Sets a new password using the emailed one-time [code].
+  Future<void> resetPassword({
+    required String email,
+    required String code,
+    required String newPassword,
+  });
 }
