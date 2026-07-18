@@ -1,5 +1,6 @@
 import '../../domain/entities/booking.dart';
 import '../../domain/entities/review.dart';
+import '../../domain/entities/user_profile.dart';
 import '../../domain/entities/salon.dart';
 import '../../domain/entities/salon_service.dart';
 import '../../domain/entities/service_category.dart';
@@ -54,6 +55,13 @@ abstract final class ApiMappers {
         rating: (json['rating'] as num).toDouble(),
         comment: json['comment'] as String,
         date: DateTime.parse(json['date'] as String).toLocal(),
+      );
+
+  static UserProfile userProfile(Map<String, dynamic> json) => UserProfile(
+        id: json['id'] as String,
+        email: json['email'] as String,
+        name: json['name'] as String,
+        isGuest: json['isGuest'] as bool,
       );
 
   static Booking booking(Map<String, dynamic> json) => Booking(

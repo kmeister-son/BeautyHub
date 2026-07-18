@@ -42,6 +42,21 @@ class ApiClient {
     return _refreshGuestToken(prefs);
   }
 
+  /// Replaces the current identity with [token] (e.g. after login/register).
+  Future<void> adoptToken(String token) async {
+    _token = token;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_tokenKey, token);
+  }
+
+  /// Forgets the stored identity; the next authenticated call mints a
+  /// fresh guest.
+  Future<void> clearToken() async {
+    _token = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_tokenKey);
+  }
+
   Future<String> _refreshGuestToken(SharedPreferences prefs) async {
     final res = await _http.post(_uri('/auth/guest'));
     final body = _decode(res) as Map<String, dynamic>;

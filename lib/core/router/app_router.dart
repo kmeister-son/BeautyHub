@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/presentation/login_screen.dart';
+import '../../features/auth/presentation/signup_screen.dart';
 import '../../features/booking/presentation/booking_screen.dart';
 import '../../features/bookings/presentation/bookings_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
@@ -45,6 +47,16 @@ final appRouter = GoRouter(
       ],
     ),
     // Full-screen flows (no bottom bar) live on the root navigator.
+    GoRoute(
+      path: '/login',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: '/signup',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const SignupScreen(),
+    ),
     GoRoute(
       path: '/salon/:id',
       parentNavigatorKey: _rootNavigatorKey,

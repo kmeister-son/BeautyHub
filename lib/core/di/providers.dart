@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/api/api_client.dart';
+import '../../data/repositories/api_auth_repository.dart';
 import '../../data/repositories/api_booking_repository.dart';
 import '../../data/repositories/api_salon_repository.dart';
+import '../../domain/repositories/auth_repository.dart';
 import '../../domain/repositories/booking_repository.dart';
 import '../../domain/repositories/salon_repository.dart';
 
@@ -16,4 +18,8 @@ final salonRepositoryProvider = Provider<SalonRepository>(
 
 final bookingRepositoryProvider = Provider<BookingRepository>(
   (ref) => ApiBookingRepository(ref.watch(apiClientProvider)),
+);
+
+final authRepositoryProvider = Provider<AuthRepository>(
+  (ref) => ApiAuthRepository(ref.watch(apiClientProvider)),
 );
