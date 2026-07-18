@@ -24,9 +24,16 @@ class ConflictException extends ApiException {
 /// guest identity via POST /auth/guest and persists the JWT, so every install
 /// owns its bookings without any sign-in UI.
 class ApiClient {
-  ApiClient({http.Client? httpClient}) : _http = httpClient ?? http.Client();
+  ApiClient({
+    http.Client? httpClient,
+    this.timeout = const Duration(seconds: 15),
+  }) : _http = httpClient ?? http.Client();
 
   static const _tokenKey = 'beautyhub_guest_token';
+
+  /// Ceiling for every request; a hung connection surfaces as a
+  /// [TimeoutException] instead of spinning forever.
+  final Duration timeout;
 
   final http.Client _http;
   String? _token;
@@ -58,7 +65,7 @@ class ApiClient {
   }
 
   Future<String> _refreshGuestToken(SharedPreferences prefs) async {
-    final res = await _http.post(_uri('/auth/guest'));
+    final res = await _http.post(_uri('/auth/guest')).timeout(timeout);
     final body = _decode(res) as Map<String, dynamic>;
     final token = body['token'] as String;
     await prefs.setString(_tokenKey, token);
@@ -110,10 +117,11 @@ class ApiClient {
       headers['Authorization'] = 'Bearer ${await _ensureToken()}';
     }
     final uri = _uri(path, query);
-    final res = method == 'GET'
-        ? await _http.get(uri, headers: headers)
-        : await _http.post(uri, headers: headers,
-            body: body == null ? null : jsonEncode(body));
+    final res = await (method == 'GET'
+            ? _http.get(uri, headers: headers)
+            : _http.post(uri, headers: headers,
+                body: body == null ? null : jsonEncode(body)))
+        .timeout(timeout);
 
     // A stored token can go stale (e.g. dev database reset). Mint a fresh
     // guest identity once and replay the request.
