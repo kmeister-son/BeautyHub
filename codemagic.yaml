@@ -1,0 +1,25 @@
+workflows:
+  ios-build-unsigned:
+    name: iOS build (unsigned — pre Apple Developer enrollment)
+    max_build_duration: 30
+    instance_type: mac_mini_m2
+    environment:
+      flutter: 3.35.5
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+    scripts:
+      - name: Get Flutter packages
+        script: flutter pub get
+      - name: Analyze
+        script: flutter analyze
+      - name: Test
+        script: flutter test
+      - name: Build iOS (no code signing)
+        script: flutter build ios --release --no-codesign
+    artifacts:
+      - build/ios/iphoneos/*.app
